@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Untitled Studios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react",
+          "react-dom": "https://esm.sh/react-dom"
+        }
+      }
+    </script>
+  </head>
+  <body class="m-0 p-0">
+    <div id="root"></div>
+
+    <script type="module">
+      import React from "react"
+      import { createRoot } from "react-dom/client"
+      import UntitledStudios from "./react.jsx"
+
+      const root = createRoot(document.getElementById("root"))
+      root.render(React.createElement(UntitledStudios))
+    </script>
+  </body>
+</html>
