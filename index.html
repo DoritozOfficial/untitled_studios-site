@@ -3,44 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>untitled studios</title>
-
+    <title>Untitled Studios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-      /* enable smooth transitions of custom color props */
-      @property --c1 {
-        syntax: "<color>";
-        inherits: false;
-        initial-value: #ffffff;
+      body, html {
+        margin: 0;
+        padding: 0;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
       }
-      @property --c2 {
-        syntax: "<color>";
-        inherits: false;
-        initial-value: #93c5fd;
+      .gradient-layer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        transition: opacity 1s ease-in-out;
       }
-
-      :root {
-        --c1: #ffffff;
-        --c2: #93c5fd;
-      }
-
-      .gradient-bg {
-        background: linear-gradient(to bottom, var(--c1), var(--c2));
-        transition: --c1 700ms ease, --c2 700ms ease;
-      }
+      .gradient1 { background: linear-gradient(to bottom, #facc15, #f97316); } /* gorillaslab */
+      .gradient2 { background: linear-gradient(to bottom, #60a5fa, #facc15); } /* langurrun */
+      .gradient3 { background: linear-gradient(to bottom, #ef4444, #000000); } /* howlerpvp */
     </style>
   </head>
-  <body class="m-0 p-0">
+  <body class="text-white">
     <div id="root"></div>
 
     <script type="text/babel" data-presets="react">
-      const { useEffect, useState } = React
+      const { useState, useEffect } = React
 
       function UntitledStudios() {
+        const [visibleGradient, setVisibleGradient] = useState(0)
         const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
         const gameImages = {
@@ -69,89 +66,61 @@
         }
 
         const gameInfo = {
-          langurrun: {
-            title: "Langur Run",
-            desc: "Run around and explore in a social game, V2 coming soon...",
-            tags: ["Social", "Platformer", "Party"]
-          },
-          gorillaslab: {
-            title: "Gorillas Lab",
-            desc: "Where Gorilla Tag meets BONELAB",
-            tags: ["Simulator", "Sandbox", "Action"]
-          },
-          howlerpvp: {
-            title: "Howler PVP",
-            desc: "Hide, or fight. PVP is key",
-            tags: ["FPS", "Action", "Platformer"]
-          }
+          gorillaslab: { title: "Gorillas Lab", desc: "Where Gorilla Tag meets BONELAB", tags: ["Simulator","Sandbox","Action"] },
+          langurrun: { title: "Langur Run", desc: "Run around and explore in a social game, V2 coming soon...", tags: ["Social","Platformer","Party"] },
+          howlerpvp: { title: "Howler PVP", desc: "Hide, or fight. PVP is key", tags: ["FPS","Action","Platformer"] }
         }
 
-        const setGradient = (c1, c2) => {
-          const r = document.documentElement
-          r.style.setProperty("--c1", c1)
-          r.style.setProperty("--c2", c2)
-        }
+        const sections = ["gorillaslab", "langurrun", "howlerpvp"]
 
-        const handleScroll = () => {
-          const sections = document.querySelectorAll("section")
-          let current = "default"
-          sections.forEach(section => {
-            const rect = section.getBoundingClientRect()
-            if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2)
-              current = section.id
-          })
-          if (current === "gorillaslab") setGradient("#facc15", "#f97316")   // yellow -> orange
-          else if (current === "langurrun") setGradient("#60a5fa", "#facc15")// blue -> yellow
-          else if (current === "howlerpvp") setGradient("#ef4444", "#000000")// red -> black
-          else setGradient("#ffffff", "#93c5fd")                             // white -> blue
-        }
+        const getCurrentImage = id => gameImages[id][currentImageIndex % gameImages[id].length]
 
         useEffect(() => {
-          // initial gradient
-          setGradient("#ffffff", "#93c5fd")
-
-          window.addEventListener("scroll", handleScroll, { passive: true })
-          const interval = setInterval(() => setCurrentImageIndex(i => i + 1), 3000)
-          return () => {
-            window.removeEventListener("scroll", handleScroll)
-            clearInterval(interval)
+          const onScroll = () => {
+            const pos = window.scrollY + window.innerHeight / 2
+            const secEls = sections.map(id => document.getElementById(id))
+            secEls.forEach((el, i) => {
+              if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) setVisibleGradient(i)
+            })
           }
+          window.addEventListener("scroll", onScroll, { passive: true })
+          const interval = setInterval(() => setCurrentImageIndex(i => i + 1), 3000)
+          return () => { window.removeEventListener("scroll", onScroll); clearInterval(interval) }
         }, [])
 
-        const getCurrentImage = id =>
-          gameImages[id][currentImageIndex % gameImages[id].length]
-
         return (
-          <div className="min-h-screen gradient-bg" style={{ fontFamily: "iA Writer Duospace, monospace" }}>
+          <>
+            <div className="gradient-layer gradient1" style={{opacity: visibleGradient===0?1:0}}></div>
+            <div className="gradient-layer gradient2" style={{opacity: visibleGradient===1?1:0}}></div>
+            <div className="gradient-layer gradient3" style={{opacity: visibleGradient===2?1:0}}></div>
+
             <header className="relative w-full h-screen flex flex-col items-center justify-center text-center">
-              <h1 className="text-6xl font-extrabold text-black relative z-10">Untitled Studios</h1>
+              <h1 className="text-6xl font-extrabold text-black bg-white/70 px-4 py-2 rounded-xl">Untitled Studios</h1>
             </header>
 
-            {["gorillaslab","langurrun","howlerpvp"].map(id => (
-              <section key={id} id={id} className="min-h-screen w-full flex flex-col md:flex-row items-center justify-between p-10 gap-10">
+            {sections.map(id => (
+              <section key={id} id={id} className="min-h-screen flex flex-col md:flex-row items-center justify-between p-10 gap-10">
                 <div className="md:w-1/2 flex flex-col justify-center h-full">
-                  <h2 className="text-4xl font-bold mb-2 text-white">{gameInfo[id].title}</h2>
+                  <h2 className="text-4xl font-bold mb-2">{gameInfo[id].title}</h2>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {gameInfo[id].tags.map((tag, i) => (
-                      <span key={i} className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{tag}</span>
-                    ))}
+                    {gameInfo[id].tags.map((t,i)=><span key={i} className="bg-white/20 px-3 py-1 rounded-full text-sm">{t}</span>)}
                   </div>
-                  <p className="text-lg mb-6 text-white">{gameInfo[id].desc}</p>
+                  <p className="text-lg mb-6">{gameInfo[id].desc}</p>
                   <div className="flex gap-4 flex-wrap">
-                    <a href={metaLinks[id]} target="_blank" rel="noopener noreferrer" className="bg-blue-400 text-black px-6 py-3 rounded-xl font-bold shadow-lg inline-block">View on Meta</a>
-                    <a href="#" className="bg-blue-500 px-6 py-3 rounded-xl font-bold shadow-lg inline-block">Join Discord</a>
+                    <a href={metaLinks[id]} target="_blank" rel="noopener noreferrer" className="bg-white text-black px-6 py-3 rounded-xl font-bold shadow-lg inline-block">View on Meta</a>
+                    <a href="#" className="bg-black/60 px-6 py-3 rounded-xl font-bold shadow-lg inline-block">Join Discord</a>
                   </div>
                 </div>
-                <div className="md:w-1/2 w-full flex justify-center h-full">
+                <div className="md:w-1/2 w-full flex justify-center">
                   <img src={getCurrentImage(id)} className="w-full h-[500px] md:h-[600px] object-cover rounded-xl shadow-xl transition-all duration-700" />
                 </div>
               </section>
             ))}
 
-            <footer className="w-full text-center py-6 text-gray-200 bg-black">
+            <footer className="w-full text-center py-6 bg-black text-gray-300">
               © {new Date().getFullYear()} Untitled Studios. All rights reserved.
             </footer>
-          </div>
+          </>
         )
       }
 
