@@ -4,27 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Untitled Studios</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-      body, html {
+      html, body {
         margin: 0;
         padding: 0;
         scroll-behavior: smooth;
         overflow-x: hidden;
       }
+
       .gradient-layer {
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
         z-index: -1;
-        transition: opacity 1s ease-in-out;
+        transition: opacity 0.4s ease-in-out;
       }
+
+      .gradient0 { background: linear-gradient(to bottom, #3b82f6, #ffffff); } /* top section */
       .gradient1 { background: linear-gradient(to bottom, #facc15, #f97316); } /* gorillaslab */
       .gradient2 { background: linear-gradient(to bottom, #60a5fa, #facc15); } /* langurrun */
       .gradient3 { background: linear-gradient(to bottom, #ef4444, #000000); } /* howlerpvp */
@@ -78,11 +81,16 @@
         useEffect(() => {
           const onScroll = () => {
             const pos = window.scrollY + window.innerHeight / 2
+            const hero = document.getElementById("hero")
+            if (pos < hero.offsetHeight) { setVisibleGradient(0); return }
+
             const secEls = sections.map(id => document.getElementById(id))
             secEls.forEach((el, i) => {
-              if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight) setVisibleGradient(i)
+              if (pos >= el.offsetTop && pos < el.offsetTop + el.offsetHeight)
+                setVisibleGradient(i + 1)
             })
           }
+
           window.addEventListener("scroll", onScroll, { passive: true })
           const interval = setInterval(() => setCurrentImageIndex(i => i + 1), 3000)
           return () => { window.removeEventListener("scroll", onScroll); clearInterval(interval) }
@@ -90,14 +98,18 @@
 
         return (
           <>
-            <div className="gradient-layer gradient1" style={{opacity: visibleGradient===0?1:0}}></div>
-            <div className="gradient-layer gradient2" style={{opacity: visibleGradient===1?1:0}}></div>
-            <div className="gradient-layer gradient3" style={{opacity: visibleGradient===2?1:0}}></div>
+            {/* background gradient layers */}
+            <div className="gradient-layer gradient0" style={{opacity: visibleGradient===0?1:0}}></div>
+            <div className="gradient-layer gradient1" style={{opacity: visibleGradient===1?1:0}}></div>
+            <div className="gradient-layer gradient2" style={{opacity: visibleGradient===2?1:0}}></div>
+            <div className="gradient-layer gradient3" style={{opacity: visibleGradient===3?1:0}}></div>
 
-            <header className="relative w-full h-screen flex flex-col items-center justify-center text-center">
-              <h1 className="text-6xl font-extrabold text-black bg-white/70 px-4 py-2 rounded-xl">Untitled Studios</h1>
+            {/* hero section */}
+            <header id="hero" className="relative w-full h-screen flex flex-col items-center justify-center text-center">
+              <h1 className="text-6xl font-extrabold text-white drop-shadow-md bg-black/30 px-4 py-3 rounded-2xl">Untitled Studios</h1>
             </header>
 
+            {/* game sections */}
             {sections.map(id => (
               <section key={id} id={id} className="min-h-screen flex flex-col md:flex-row items-center justify-between p-10 gap-10">
                 <div className="md:w-1/2 flex flex-col justify-center h-full">
