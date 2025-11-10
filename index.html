@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Untitled Studios</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=iA+Writer+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -16,6 +17,7 @@
         padding: 0;
         scroll-behavior: smooth;
         overflow-x: hidden;
+        font-family: 'iA Writer Mono', monospace;
       }
 
       .gradient-layer {
@@ -27,7 +29,7 @@
         transition: opacity 0.4s ease-in-out;
       }
 
-      .gradient0 { background: linear-gradient(to bottom, #3b82f6, #ffffff); } /* blue -> white */
+      .gradient0 { background: linear-gradient(to bottom, #ffffff, #93c5fd); } /* white -> light blue */
       .gradient1 { background: linear-gradient(to bottom, #facc15, #f97316); } /* gorillaslab */
       .gradient2 { background: linear-gradient(to bottom, #60a5fa, #facc15); } /* langurrun */
       .gradient3 { background: linear-gradient(to bottom, #ef4444, #000000); } /* howlerpvp */
@@ -98,7 +100,7 @@
 
         return (
           <>
-            {/* gradient layers */}
+            {/* background gradient layers */}
             <div className="gradient-layer gradient0" style={{opacity: visibleGradient===0?1:0}}></div>
             <div className="gradient-layer gradient1" style={{opacity: visibleGradient===1?1:0}}></div>
             <div className="gradient-layer gradient2" style={{opacity: visibleGradient===2?1:0}}></div>
@@ -129,7 +131,7 @@
               </section>
             ))}
 
-            <footer className="w-full text-center py-6 bg-black text-gray-300">
+            <footer className="w-full text-center py-6 bg-black text-gray-300 font-medium">
               © {new Date().getFullYear()} Untitled Studios. All rights reserved.
             </footer>
           </>
