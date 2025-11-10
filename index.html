@@ -27,7 +27,7 @@
         transition: opacity 0.4s ease-in-out;
       }
 
-      .gradient0 { background: linear-gradient(to bottom, #3b82f6, #ffffff); } /* top section */
+      .gradient0 { background: linear-gradient(to bottom, #3b82f6, #ffffff); } /* blue -> white */
       .gradient1 { background: linear-gradient(to bottom, #facc15, #f97316); } /* gorillaslab */
       .gradient2 { background: linear-gradient(to bottom, #60a5fa, #facc15); } /* langurrun */
       .gradient3 { background: linear-gradient(to bottom, #ef4444, #000000); } /* howlerpvp */
@@ -98,7 +98,7 @@
 
         return (
           <>
-            {/* background gradient layers */}
+            {/* gradient layers */}
             <div className="gradient-layer gradient0" style={{opacity: visibleGradient===0?1:0}}></div>
             <div className="gradient-layer gradient1" style={{opacity: visibleGradient===1?1:0}}></div>
             <div className="gradient-layer gradient2" style={{opacity: visibleGradient===2?1:0}}></div>
@@ -106,7 +106,7 @@
 
             {/* hero section */}
             <header id="hero" className="relative w-full h-screen flex flex-col items-center justify-center text-center">
-              <h1 className="text-6xl font-extrabold text-white drop-shadow-md bg-black/30 px-4 py-3 rounded-2xl">Untitled Studios</h1>
+              <h1 className="text-6xl font-extrabold text-black">Untitled Studios</h1>
             </header>
 
             {/* game sections */}
