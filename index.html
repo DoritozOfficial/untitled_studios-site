@@ -3,21 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Untitled Studios</title>
+    <title>untitled studios</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      /* enable smooth transitions of custom color props */
+      @property --c1 {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: #ffffff;
+      }
+      @property --c2 {
+        syntax: "<color>";
+        inherits: false;
+        initial-value: #93c5fd;
+      }
+
+      :root {
+        --c1: #ffffff;
+        --c2: #93c5fd;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(to bottom, var(--c1), var(--c2));
+        transition: --c1 700ms ease, --c2 700ms ease;
+      }
+    </style>
   </head>
   <body class="m-0 p-0">
     <div id="root"></div>
 
-    <!-- your JSX script -->
-    <script type="text/babel" data-type="module" data-presets="react">
+    <script type="text/babel" data-presets="react">
       const { useEffect, useState } = React
 
       function UntitledStudios() {
-        const [bgGradient, setBgGradient] = useState("bg-gradient-to-b from-white to-blue-300")
         const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
         const gameImages = {
@@ -45,43 +68,6 @@
           langurrun: "https://www.meta.com/experiences/langur-run/6918495718241416/"
         }
 
-        const handleScroll = () => {
-          const sections = document.querySelectorAll("section")
-          let current = "default"
-          sections.forEach(section => {
-            const rect = section.getBoundingClientRect()
-            if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2)
-              current = section.id
-          })
-          switch (current) {
-            case "gorillaslab":
-              setBgGradient("bg-gradient-to-b from-yellow-400 to-orange-500")
-              break
-            case "langurrun":
-              setBgGradient("bg-gradient-to-b from-blue-400 to-yellow-400")
-              break
-            case "howlerpvp":
-              setBgGradient("bg-gradient-to-b from-red-500 to-black")
-              break
-            default:
-              setBgGradient("bg-gradient-to-b from-white to-blue-300")
-          }
-        }
-
-        useEffect(() => {
-          window.addEventListener("scroll", handleScroll)
-          const interval = setInterval(() => {
-            setCurrentImageIndex(prev => prev + 1)
-          }, 3000)
-          return () => {
-            window.removeEventListener("scroll", handleScroll)
-            clearInterval(interval)
-          }
-        }, [])
-
-        const getCurrentImage = (gameId) =>
-          gameImages[gameId][currentImageIndex % gameImages[gameId].length]
-
         const gameInfo = {
           langurrun: {
             title: "Langur Run",
@@ -100,62 +86,64 @@
           }
         }
 
+        const setGradient = (c1, c2) => {
+          const r = document.documentElement
+          r.style.setProperty("--c1", c1)
+          r.style.setProperty("--c2", c2)
+        }
+
+        const handleScroll = () => {
+          const sections = document.querySelectorAll("section")
+          let current = "default"
+          sections.forEach(section => {
+            const rect = section.getBoundingClientRect()
+            if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2)
+              current = section.id
+          })
+          if (current === "gorillaslab") setGradient("#facc15", "#f97316")   // yellow -> orange
+          else if (current === "langurrun") setGradient("#60a5fa", "#facc15")// blue -> yellow
+          else if (current === "howlerpvp") setGradient("#ef4444", "#000000")// red -> black
+          else setGradient("#ffffff", "#93c5fd")                             // white -> blue
+        }
+
+        useEffect(() => {
+          // initial gradient
+          setGradient("#ffffff", "#93c5fd")
+
+          window.addEventListener("scroll", handleScroll, { passive: true })
+          const interval = setInterval(() => setCurrentImageIndex(i => i + 1), 3000)
+          return () => {
+            window.removeEventListener("scroll", handleScroll)
+            clearInterval(interval)
+          }
+        }, [])
+
+        const getCurrentImage = id =>
+          gameImages[id][currentImageIndex % gameImages[id].length]
+
         return (
-          <div
-            className={`min-h-screen transition-colors duration-700 ${bgGradient}`}
-            style={{ fontFamily: "iA Writer Duospace, monospace" }}
-          >
+          <div className="min-h-screen gradient-bg" style={{ fontFamily: "iA Writer Duospace, monospace" }}>
             <header className="relative w-full h-screen flex flex-col items-center justify-center text-center">
-              <h1 className="text-6xl font-extrabold text-black relative z-10">
-                Untitled Studios
-              </h1>
+              <h1 className="text-6xl font-extrabold text-black relative z-10">Untitled Studios</h1>
             </header>
 
-            {["gorillaslab", "langurrun", "howlerpvp"].map((gameId) => (
-              <section
-                key={gameId}
-                id={gameId}
-                className="min-h-screen w-full flex flex-col md:flex-row items-center justify-between p-10 gap-10"
-              >
+            {["gorillaslab","langurrun","howlerpvp"].map(id => (
+              <section key={id} id={id} className="min-h-screen w-full flex flex-col md:flex-row items-center justify-between p-10 gap-10">
                 <div className="md:w-1/2 flex flex-col justify-center h-full">
-                  <h2 className="text-4xl font-bold mb-2 text-white">
-                    {gameInfo[gameId].title}
-                  </h2>
+                  <h2 className="text-4xl font-bold mb-2 text-white">{gameInfo[id].title}</h2>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {gameInfo[gameId].tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="bg-white/20 text-white px-3 py-1 rounded-full text-sm"
-                      >
-                        {tag}
-                      </span>
+                    {gameInfo[id].tags.map((tag, i) => (
+                      <span key={i} className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">{tag}</span>
                     ))}
                   </div>
-                  <p className="text-lg mb-6 text-white">
-                    {gameInfo[gameId].desc}
-                  </p>
+                  <p className="text-lg mb-6 text-white">{gameInfo[id].desc}</p>
                   <div className="flex gap-4 flex-wrap">
-                    <a
-                      href={metaLinks[gameId]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-blue-400 text-black px-6 py-3 rounded-xl font-bold shadow-lg inline-block"
-                    >
-                      View on Meta
-                    </a>
-                    <a
-                      href="#"
-                      className="bg-blue-500 px-6 py-3 rounded-xl font-bold shadow-lg inline-block"
-                    >
-                      Join Discord
-                    </a>
+                    <a href={metaLinks[id]} target="_blank" rel="noopener noreferrer" className="bg-blue-400 text-black px-6 py-3 rounded-xl font-bold shadow-lg inline-block">View on Meta</a>
+                    <a href="#" className="bg-blue-500 px-6 py-3 rounded-xl font-bold shadow-lg inline-block">Join Discord</a>
                   </div>
                 </div>
                 <div className="md:w-1/2 w-full flex justify-center h-full">
-                  <img
-                    src={getCurrentImage(gameId)}
-                    className="w-full h-[500px] md:h-[600px] object-cover rounded-xl shadow-xl transition-all duration-700"
-                  />
+                  <img src={getCurrentImage(id)} className="w-full h-[500px] md:h-[600px] object-cover rounded-xl shadow-xl transition-all duration-700" />
                 </div>
               </section>
             ))}
@@ -163,10 +151,6 @@
             <footer className="w-full text-center py-6 text-gray-200 bg-black">
               © {new Date().getFullYear()} Untitled Studios. All rights reserved.
             </footer>
-
-            <style>
-              {`@keyframes fadeIn{from{opacity:0}to{opacity:1}}.animate-fadeIn{animation:fadeIn 0.3s ease-out}.animate-scaleIn{animation:scaleIn 0.3s ease-out}@keyframes scaleIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}`}
-            </style>
           </div>
         )
       }
